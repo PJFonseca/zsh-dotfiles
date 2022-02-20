@@ -4,4 +4,6 @@ alias lt="ls -lhAtr"
 alias ld="ls -ld */"
 alias lpm="stat -c '%a %n' *"
 alias week="date +%V"
-alias install='sudo apt-get install'
+alias install="sudo apt-get install"
+alias del="rm -rf"
+alias cls="clear"
