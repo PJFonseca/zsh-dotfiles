@@ -1,3 +1,35 @@
+# Fancy colorful echo messages
+function msgout(){
+	local color=$1;
+	local message=$2;
+	if ! [[ $color =~ '^[0-9]$' ]] ; then
+		case $(echo -e $color | tr '[:upper:]' '[:lower:]') in
+			# black
+			header) color=0 ;;
+			# red
+			error) color=1 ;;
+			# green
+			success) color=2 ;;
+			# yellow
+			welcome) color=3 ;;
+			# blue
+			title) color=4 ;;
+			# purple
+			info) color=5 ;;
+			# cyan
+			question) color=6 ;;
+			# orange
+			warning) color=202 ;;
+			# white
+			*) color=7 ;;
+		esac
+	fi
+	tput bold;
+	tput setaf $color;
+	echo '-- '$message;
+	tput sgr0;
+}
+
 #Clears some dirs
 function clean(){
 	sudo rm -r ~/$DOWNLOAD_FOLDER/* 2> /dev/null
@@ -19,4 +51,103 @@ function dotfiles_update(){
 #Update host files to block bad hosts
 function ublock(){
 	sudo wget -O '/etc/hosts' 'https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts' &> /dev/null && sync &> /dev/null
+}
+function idbeaver(){
+	cd /tmp/ && wget -P /tmp/ --trust-server-names https://dbeaver.io/files/dbeaver-ce-latest-stable.x86_64.deb -O dbeaver-ce-latest-stable.x86_64.deb && sudo dnf install -y /tmp/dbeaver-ce-latest-stable.x86_64.deb
+}
+function iskype(){
+	cd /tmp/ && wget -P /tmp/ --trust-server-names https://go.skype.com/skypeforlinux-64.deb && sudo dnf install -y /tmp/skypeforlinux-64.deb
+}
+function ilogseq(){
+	cd /tmp/ && wget -P /tmp/ https://github.com/logseq/logseq/releases/download/0.5.9/Logseq-linux-x64-0.5.9.AppImage -O logseq.appimage
+
+	sudo chmod +x logseq.appimage
+
+	sudo mkdir /opt/logseq
+	sudo mv logseq.appimage /opt/logseq/
+
+	wget -P /tmp/ https://asset.logseq.com/static/img/logo.png -O logseq.png
+	sudo mv logseq.png /opt/logseq/logseq.png
+
+	cat << EOF > ~/.local/share/applications/logseq.desktop
+	[Desktop Entry]
+	Type=Application
+	Name=Logseq
+	GenericName=logseq
+	Comment=logseq
+	Categories=Utility;
+	Exec=/opt/logseq/logseq.appimage
+	Icon=/opt/logseq/logseq.png
+	Terminal=false
+EOF
+}
+
+function myip(){
+	myexternalip="$(curl https://ipinfo.io/ip 2>/dev/null)"
+	mylocalip="$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1' | sed -n 1p)"
+	msgout warning "External: ${myexternalip}"
+	msgout success "Local: ${mylocalip}"
+}
+
+#Download stuff from YouTube
+function bookdl(){
+	youtube-dl --ignore-errors -f bestaudio --extract-audio --audio-format m4a --embed-thumbnail --audio-quality 0 $1 -o '$AUDIO_BOOKS_FOLDER/%(artist)s/%(album)s/%(title)s.%(ext)s'
+	msgout success "Book downloaded!"
+	cd $AUDIO_BOOKS_FOLDER
+}
+function musicdl(){
+	youtube-dl --ignore-errors -f bestaudio --extract-audio --audio-format m4a --embed-thumbnail --audio-quality 0 $1 -o '$MUSIC_FOLDER/%(title)s.%(ext)s'
+	msgout $MUSIC_FOLDER
+}
+function videodl(){
+	youtube-dl $1 -o '$MUSIC_FOLDER/%(title)s.%(ext)s' -f 'bestvideo[height>=720]+bestaudio/best[height>=720]'
+	msgout $MUSIC_FOLDER
+}
+function playlistdl(){
+	youtube-dl --ignore-errors -f bestaudio --extract-audio --audio-format mp3 --audio-quality 0 $1 -o '$MUSIC_FOLDER/TMP/%(title)s.%(ext)s'
+	msgout success "Music downloaded!"
+	cd $MUSIC_FOLDER/TMP/
+}
+#Meteo in CLI
+function meteo() {
+  local LOCALE=$(echo ${LANG:-en} | cut -c1-2)
+  if [ $# -eq 0 ]; then
+    local LOCATION=$(curl -s ipinfo.io/loc)
+  else
+    local LOCATION=$1
+  fi
+  curl -s "$LOCALE.wttr.in/$LOCATION"
+}
+
+function mergevideos(){
+	directory=$(pwd)
+	rm -R inputs.txt
+	rm -R output.${1}
+	#Replace spaces from the names to underscores
+	for i in *' '* ; do mv "$i" "${i// /_}" ; done
+	#Grab the files into an array
+	files=$( find . -type f -name "*.${1}" | sort -V )
+	#Create a list of inputs
+	for i in $files; do
+		echo "file '$i'" >> inputs.txt
+	done;
+	#do the magic
+	ffmpeg -f concat -safe 0 -i inputs.txt -c copy output.${1}
+}
+
+function ODT2PDF(){
+	#Replace spaces from the names to underscores
+	for i in *' '* ; do mv "$i" "${i// /_}" ; done
+	sudo libreoffice --headless --convert-to pdf *.odt
+	sudo pdfunite $(ls *.pdf | sort -n) Book_of_Labs.pdf
+	sudo cp Book_of_Labs.pdf ../StudentBundle/
+	#sudo rm -R *.pdf
+}
+function ODP2PDF(){
+	#Replace spaces from the names to underscores
+	for i in *' '* ; do mv "$i" "${i// /_}" ; done
+	sudo libreoffice --headless --convert-to pdf *.odp
+	sudo pdfunite $(ls *.pdf | sort -n) Book_of_Slides.pdf
+	sudo cp Book_of_Slides.pdf ../StudentBundle/
+	#sudo rm -R *.pdf
 }
