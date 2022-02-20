@@ -10,7 +10,7 @@ function clean(){
 function dotfiles_update(){
 rm -rf ~/.dotfiles
 rm -rf /tmp/dotfiles/
-git clone --recurse-submodules https://github.com/PJFonseca/zsh-dotfiles /tmp/dotfiles/
+git clone --recurse-submodules https://github.com/PJFonseca/zsh-dotfiles /tmp/dotfiles
 cp -R /tmp/dotfiles/.zshrc ~/.zshrc
 mkdir ~/.dotfiles
 cp -R /tmp/dotfiles/.dotfiles/. ~/.dotfiles/
