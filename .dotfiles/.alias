@@ -8,3 +8,6 @@ alias install="sudo apt-get install"
 alias del="rm -rf"
 alias cls="clear"
 alias q="exit"
+
+alias vpnh="sudo openvpn $CLOUDSTORAGE_FOLDER/Documentos/Cyber/0_Setup/balrogPT.ovpn"
+alias vpnt="sudo openvpn $CLOUDSTORAGE_FOLDER/Documentos/Cyber/0_Setup/thm_Blr0g.ovpn"
