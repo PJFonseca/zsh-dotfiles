@@ -1,0 +1,6 @@
+alias l="ls -lhF --color=auto"
+alias ll="ls -lhAa "
+alias lt="ls -lhAtr"
+alias ld="ls -ld */"
+alias lpm="stat -c '%a %n' *"
+alias week="date +%V"

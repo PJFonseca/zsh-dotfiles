@@ -1,0 +1,15 @@
+#Clears some dirs
+function clean(){
+	sudo rm -r ~/$DOWNLOAD_FOLDER/* 2> /dev/null
+	sudo rm -r ~/$IMAGES_FOLDER/* 2> /dev/null
+	sudo rm -rf ~/.local/share/Trash/info/* 2> /dev/null
+	sudo rm -rf ~/.local/share/Trash/files/* 2> /dev/null
+}
+
+#Update dotfiles
+function dotfiles_update(){
+	rm -rf $HOME/.dotfilesrm -rf
+	rm -rf $HOME/.zshrc
+	git clone --recurse-submodules https://github.com/PJFonseca/zsh-dotfiles $HOME
+	source ./.zshrc
+}
