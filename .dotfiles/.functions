@@ -53,10 +53,10 @@ function ublock(){
 	sudo wget -O '/etc/hosts' 'https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts' &> /dev/null && sync &> /dev/null
 }
 function idbeaver(){
-	cd /tmp/ && wget -P /tmp/ --trust-server-names https://dbeaver.io/files/dbeaver-ce_latest_amd64.deb -O dbeaver-ce_latest_amd64.deb && sudo dnf install -y /tmp/dbeaver-ce_latest_amd64.deb
+	cd /tmp/ && wget -P /tmp/ --trust-server-names https://dbeaver.io/files/dbeaver-ce_latest_amd64.deb -O dbeaver-ce_latest_amd64.deb && sudo apt install -y /tmp/dbeaver-ce_latest_amd64.deb
 }
 function iskype(){
-	cd /tmp/ && wget -P /tmp/ --trust-server-names https://go.skype.com/skypeforlinux-64.deb && sudo dnf install -y /tmp/skypeforlinux-64.deb
+	cd /tmp/ && wget -P /tmp/ --trust-server-names https://go.skype.com/skypeforlinux-64.deb && sudo apt install -y /tmp/skypeforlinux-64.deb
 }
 function ilogseq(){
 	cd /tmp/ && wget -P /tmp/ https://github.com/logseq/logseq/releases/download/0.5.9/Logseq-linux-x64-0.5.9.AppImage -O logseq.appimage
