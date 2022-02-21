@@ -58,6 +58,9 @@ function idbeaver(){
 function iskype(){
 	cd /tmp/ && wget -P /tmp/ --trust-server-names https://go.skype.com/skypeforlinux-64.deb && sudo apt install -y /tmp/skypeforlinux-64.deb
 }
+function ivscode(){
+  cd /tmp/ && wget -P /tmp/ --trust-server-names https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64 -O vscode.deb && sudo apt install -y /tmp/vscode.deb
+}
 function ilogseq(){
 	cd /tmp/ && wget -P /tmp/ https://github.com/logseq/logseq/releases/download/0.5.9/Logseq-linux-x64-0.5.9.AppImage -O logseq.appimage
 
