@@ -53,7 +53,7 @@ function ublock(){
 	sudo wget -O '/etc/hosts' 'https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts' &> /dev/null && sync &> /dev/null
 }
 function idbeaver(){
-	cd /tmp/ && wget -P /tmp/ --trust-server-names https://dbeaver.io/files/dbeaver-ce-latest-stable.x86_64.deb -O dbeaver-ce-latest-stable.x86_64.deb && sudo dnf install -y /tmp/dbeaver-ce-latest-stable.x86_64.deb
+	cd /tmp/ && wget -P /tmp/ --trust-server-names https://dbeaver.io/files/dbeaver-ce_latest_amd64.deb -O dbeaver-ce_latest_amd64.deb && sudo dnf install -y /tmp/dbeaver-ce_latest_amd64.deb
 }
 function iskype(){
 	cd /tmp/ && wget -P /tmp/ --trust-server-names https://go.skype.com/skypeforlinux-64.deb && sudo dnf install -y /tmp/skypeforlinux-64.deb
