@@ -37,7 +37,13 @@ function clean(){
 	sudo rm -rf ~/.local/share/Trash/info/* 2> /dev/null
 	sudo rm -rf ~/.local/share/Trash/files/* 2> /dev/null
 }
+function update(){
 
+    sudo apt -y update --best --allowerasing --skip-broken && sudo apt -y upgrade --refresh && sudo apt -y autoremove && sudo apt -y clean all && clean && ublock
+		#Update GNOME Shell Extensions
+		gnome-shell-extension-installer --yes --update --restart-shell
+	fi;
+}
 #Update dotfiles
 function dotfiles_update(){
   rm -rf ~/.dotfiles
