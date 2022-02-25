@@ -38,9 +38,9 @@ function clean(){
 	sudo rm -rf ~/.local/share/Trash/files/* 2> /dev/null
 }
 function update(){
-    sudo apt -y update --best --allowerasing --skip-broken && sudo apt -y upgrade --refresh && sudo apt -y autoremove && sudo apt -y clean all && clean && ublock
+    sudo apt-get update && sudo apt-get clean && sudo apt-get autoremove && sudo apt --fix-broken install && sudo apt-get update && sudo apt-get upgrade && sudo dpkg --configure -a && sudo apt-get install -f && clean && ublock
 		#Update GNOME Shell Extensions
-		gnome-shell-extension-installer --yes --update --restart-shell
+		#gnome-shell-extension-installer --yes --update --restart-shell
 }
 #Update dotfiles
 function dotfiles_update(){
