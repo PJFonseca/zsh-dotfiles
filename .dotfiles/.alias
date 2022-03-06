@@ -14,3 +14,7 @@ alias repos="cd /etc/apt/sources.list.d/"
 
 alias vpnh="sudo openvpn $CLOUDSTORAGE_FOLDER/Documentos/Cyber/0_Setup/balrogPT.ovpn"
 alias vpnt="sudo openvpn $CLOUDSTORAGE_FOLDER/Documentos/Cyber/0_Setup/thm_Blr0g.ovpn"
+
+#Hacking
+alias nmapip="sudo nmap -Pn -sS -sU -sV -T4 -A -v -p 1-1000 -oG nmap_output $1"
+alias rockyou="/mnt/stuff/CloudStorage/Documentos/Cyber/90_Dictionaries/SecLists/Passwords/rockyou.txt"
