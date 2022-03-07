@@ -158,3 +158,127 @@ function ODP2PDF(){
 	sudo cp Book_of_Slides.pdf ../StudentBundle/
 	#sudo rm -R *.pdf
 }
+
+function png2pdf(){
+  #!/bin/bash
+
+  # Creation of a PDF file from a sequence of PNG page images.
+
+  # JMCE [https://twitter.com/jmcest ], once upon a time.
+  # Take it as public domain. It's a mess, anyway.
+
+  # @@ ALMOST NO ERROR CHECKING YET!
+
+  # Usage
+  # =====
+  # pdfbind [-0|-1|-2|-3|-4] [-xCOLORS] [-o] OUTPUT.pdf PAGE1.png [PAGE2.png ...]
+  #   Create OUTPUT.pdf from page image files PAGE1.png PAGE2.png ...
+  #   Page images are lossy compressed using pngquant, and the resulting files
+  #   are processed by img2pdf.
+  #   If option -N is specified with N in {1,2,3,4}, N least significant bits of
+  #   color are truncated per channel.  The default (no options specified) is -4.
+  #   If option -0 is specified, no color bit truncation is performed.
+  #   Any other options are ignored.
+  #   If -x followed by a number of colors (<=256) is specified, that will be the
+  #   number of colors in the output image.
+  #   If -o is specified, ordered dithering is used instead of Floyd-Steinberg dithering.
+  #   If -q is specified, don't delete the converted images.
+
+  my_name=$(basename "$0")
+  context="${my_name}"
+
+  function say() { echo "${context}: $*"; }
+  function warn() { say "warning: $*"; }
+  function error() { say "error: $*"; }
+  function error_exit() { [[ $# -ne 0 ]] && error "$*"; exit 64; }
+
+  TRUNCATION="--posterize 4"
+  NCOLORS=""
+  DITHERING=""
+  PURGE="yes"
+  while  [[ $1 == -* ]]; do
+    option=$1
+    shift
+    if [[ ${option} =~ ^-([1-4])$ ]]; then
+      TRUNCATION="--posterize ${BASH_REMATCH[1]}"
+    elif [[ ${option} == -0 ]]; then
+      TRUNCATION=""
+    elif [[ ${option} =~ ^-x([0-9]+)$ ]]; then
+      NCOLORS="${BASH_REMATCH[1]}"
+    elif [[ ${option} == -o ]]; then
+      DITHERING="--ordered"
+    elif [[ ${option} == -q ]]; then
+      PURGE="no"
+    elif [[ ${option} == -- ]]; then
+      # Expect no more options.
+      break
+    else
+      warn "ignoring invalid option ${option}"
+    fi
+  done
+
+  if [[ $# -eq 0 ]]; then
+    error_exit "you did not specify an output file"
+  fi
+  output_file="$1"
+  if [[ -f ${output_file} ]]; then
+    error_exit "${output_file}, specified as output file, already exists"
+  fi
+  shift
+  if [[ $# -eq 0 ]]; then
+    error_exit "you did not specify page image files"
+  fi
+  declare -a input_pages converted_pages
+  input_pages=("$@")
+  converted_pages=("${@/%.png/-quant.png}")
+
+  input_size=$(du -h -c "${input_pages[@]}" | tail -1 | cut -f 1)
+
+  for input_page in "${input_pages[@]}"; do
+    page_type=$(file "${input_page}")
+    converted_page="${input_page/%.png/-quant.png}"
+    quant_out=$(pngquant --verbose --speed 1 ${TRUNCATION} ${NCOLORS} ${DITHERING} --ext '-quant.png' "${input_page}" 2>&1)
+    ##echo "${quant_out}"
+    if [[ ${quant_out} =~ \
+          \.\.\.([0-9]+)\ colors.*\ \(Q=([0-9.,]+)\)[[:space:]]+writing\ ([0-9]+)-color ]]
+    then
+      num_colors_1=${BASH_REMATCH[1]}
+      num_colors_2=${BASH_REMATCH[3]}
+      quality=${BASH_REMATCH[2]}
+    else
+      num_colors_1='??'
+      num_colors_2='??'
+      quality='??'
+    fi
+    if [[ ${page_type} =~ "grayscale" ]]; then
+      color_type='g'
+      # We do this so that img2pdf perceives the converted image as grayscale:
+      # indexed PNG files are handled by img2pdf as RGB color images.
+      mogrify -type Grayscale "${converted_page}"
+      # @@ Note that the output of mogrify can be larger than the original image,
+      #    and so can be its contribution to the PDF size, but using
+      #    pngcrush or optipng to compress the PNG file will have no effect
+      #    on the resulting PDF part.
+    else
+      color_type='c'
+    fi
+    echo "${input_page}" \
+         " ${color_type} ? ${num_colors_1} ? ${num_colors_2} colors  Q=${quality}"
+  done
+
+  img2pdf --engine pikepdf "${converted_pages[@]}" > "${output_file}"
+  output_size=$(du -h "${output_file}" | cut -f 1)
+  echo "${#input_pages[@]} pages (${input_size}) ? ${output_file} (${output_size})"
+
+  if [[ ${PURGE} == yes ]]; then
+    rm "${converted_pages[@]}"
+  fi
+  evince "${output_file}" >& /dev/null
+
+  # Local Variables:
+  # sh-basic-offset: 2
+  # sh-indentation: 2
+  # fill-column: 79
+  # End:
+
+}
